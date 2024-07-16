@@ -16,8 +16,13 @@ export default function Home() {
             <div className='relative mx-auto text-center lg:text-left flex flex-col items-center lg:items-start'>
               <div className='absolute w-28 left-0 -top-20 hidden lg:block'>
                 {/* i forgot this div right here in the video, it's purely visual gradient and looks nice */}
-
-                <img src='/snake-1.png' className='w-full' />
+                <Image
+                  src='/snake-1.png'
+                  className='w-full'
+                  width={112}
+                  height={146}
+                  alt="Logo"
+                />
               </div>
               <h1 className='relative w-fit tracking-tight text-balance mt-16 font-bold !leading-tight text-gray-900 text-5xl md:text-6xl lg:text-7xl'>
                 Your Image on a{' '}
@@ -137,7 +142,13 @@ export default function Home() {
               </span>{' '}
               say
             </h2>
-            <img src='/snake-2.png' className='w-24 order-0 lg:order-2' />
+            <Image
+              src='/snake-2.png'
+              className='w-24 order-0 lg:order-2'
+              alt='Logo 2'
+              width={96}
+              height={85.15}
+            />
           </div>
 
           <div className='mx-auto grid max-w-2xl grid-cols-1 px-4 lg:mx-0 lg:max-w-none lg:grid-cols-2 gap-y-16'>
@@ -161,10 +172,12 @@ export default function Home() {
                 </p>
               </div>
               <div className='flex gap-4 mt-2'>
-                <img
+                <Image
                   className='rounded-full h-12 w-12 object-cover'
                   src='/users/user-1.png'
                   alt='user'
+                  width={48}
+                  height={48}
                 />
                 <div className='flex flex-col'>
                   <p className='font-semibold'>Jonathan</p>
@@ -198,10 +211,12 @@ export default function Home() {
                 </p>
               </div>
               <div className='flex gap-4 mt-2'>
-                <img
+                <Image
                   className='rounded-full h-12 w-12 object-cover'
-                  src='/users/user-4.jpg'
+                  src='/users/user-4.png'
                   alt='user'
+                  width={48}
+                  height={48}
                 />
                 <div className='flex flex-col'>
                   <p className='font-semibold'>Josh</p>
