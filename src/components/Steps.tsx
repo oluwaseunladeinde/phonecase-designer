@@ -58,7 +58,7 @@ const Steps = () => {
                                         className={cn(
                                             'flex h-20 w-20 object-contain items-center justify-center',
                                             {
-                                                'border-green-600': isCompleted,
+                                                'border-none': isCompleted,
                                                 'border-zinc-700': isCurrent,
                                             }
                                         )}
