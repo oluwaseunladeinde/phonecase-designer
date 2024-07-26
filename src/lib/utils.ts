@@ -14,9 +14,10 @@ export const formatPrice = (price: number) => {
   return formatter.format(price)
 }
 
-export const formatNaira = (value: number) => {
-  const nairaSymbol = "\u{020A6}";
-  return nairaSymbol + new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2,
+export const formatNaira = (value: number): string => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 2, // Ensures two decimal places
   }).format(value);
 }
