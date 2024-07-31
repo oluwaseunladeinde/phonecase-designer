@@ -2,7 +2,7 @@
 
 import { useToast } from "@/components/ui/use-toast";
 import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products';
-import { cn, formatNaira } from "@/lib/utils";
+import { cn, convertToNairaWithCurrency } from "@/lib/utils";
 import Confetti from 'react-dom-confetti'
 import { Configuration } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Phone from "@/components/Phone";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createCheckoutSession } from "./actions";
 
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
@@ -37,7 +38,18 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
     const { mutate: createPaymentSession } = useMutation({
         mutationKey: ['get-checkout-session'],
-
+        mutationFn: createCheckoutSession,
+        onSuccess: ({ url }) => {
+            if (url) router.push(url)
+            else throw new Error('Unable to retrieve payment URL.')
+        },
+        onError: () => {
+            toast({
+                title: 'Something went wrong',
+                description: 'There was an error on our end. Please try again.',
+                variant: 'destructive',
+            })
+        },
     })
 
     return (
@@ -95,7 +107,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                                 <div className='flex items-center justify-between py-1 mt-2'>
                                     <p className='text-gray-600'>Base price</p>
                                     <p className='font-medium text-gray-900'>
-                                        {formatNaira(BASE_PRICE / 100)}
+                                        {convertToNairaWithCurrency(BASE_PRICE / 100)}
                                     </p>
                                 </div>
 
@@ -103,7 +115,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                                     <div className='flex items-center justify-between py-1 mt-2'>
                                         <p className='text-gray-600'>Textured finish</p>
                                         <p className='font-medium text-gray-900'>
-                                            {formatNaira(PRODUCT_PRICES.finish.textured / 100)}
+                                            {convertToNairaWithCurrency(PRODUCT_PRICES.finish.textured / 100)}
                                         </p>
                                     </div>
                                 ) : null}
@@ -112,7 +124,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                                     <div className='flex items-center justify-between py-1 mt-2'>
                                         <p className='text-gray-600'>Soft polycarbonate material</p>
                                         <p className='font-medium text-gray-900'>
-                                            {formatNaira(PRODUCT_PRICES.material.polycarbonate / 100)}
+                                            {convertToNairaWithCurrency(PRODUCT_PRICES.material.polycarbonate / 100)}
                                         </p>
                                     </div>
                                 ) : null}
@@ -122,14 +134,16 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                                 <div className='flex items-center justify-between py-2'>
                                     <p className='font-semibold text-gray-900'>Order total</p>
                                     <p className='font-semibold text-gray-900'>
-                                        {formatNaira(totalPrice / 100)}
+                                        {convertToNairaWithCurrency(totalPrice / 100)}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div className='mt-8 flex justify-end pb-12'>
                             <Button
-                                onClick={() => { }}
+                                onClick={() =>
+                                    createPaymentSession({ configId: configuration.id })
+                                }
                                 className='px-4 sm:px-6 lg:px-8'>
                                 Check out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
                             </Button>

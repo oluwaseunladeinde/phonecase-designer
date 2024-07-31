@@ -43,7 +43,7 @@ export const initializePayment = async (amount: number, email: string) => {
     }
 }
 
-const VAT = 75 / 100
+const VAT = 7.5 / 100
 export const calculateVAT = (value: number) => {
     return value * VAT;
 }

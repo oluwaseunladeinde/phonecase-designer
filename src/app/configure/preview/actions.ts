@@ -6,6 +6,8 @@ import axios from "axios";
 import { calculateVAT, generateRefenceNumber, INITIALIZETRANSACTIONURL } from '@/lib/paystack';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { Order } from '@prisma/client';
+import { getOrCreateUser } from '@/lib/helpers';
+import { convertToNaira } from '@/lib/utils';
 
 export const createCheckoutSession = async ({ configId }: { configId: string }) => {
     const configuration = await db.configuration.findUnique({
@@ -23,6 +25,8 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         throw new Error('You need to be logged in')
     }
 
+    const profileUser = await getOrCreateUser(user.id, user.email)
+
     const { finish, material } = configuration
 
     let totalprice = BASE_PRICE
@@ -31,23 +35,29 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
     if (material === 'polycarbonate')
         totalprice += PRODUCT_PRICES.material.polycarbonate
 
+    totalprice = convertToNaira(totalprice)
+
     let order: Order | undefined = undefined
 
     const existingOrder = await db.order.findFirst({
         where: {
-            userId: user.id,
+            userId: profileUser?.id,
             configurationId: configuration.id,
         },
     })
 
-    console.log(user.id, configuration.id)
+    const priceAfterVAT = Math.round((totalprice + calculateVAT(totalprice)))
+
+    console.log('priceBeforeVAT ', totalprice);
+    console.log('VAT ', calculateVAT(totalprice));
+    console.log('priceAfterVAT ', priceAfterVAT);
 
     if (existingOrder) {
         order = existingOrder
     } else {
         order = await db.order.create({
             data: {
-                amount: totalprice / 100,
+                amount: priceAfterVAT,
                 userId: user.id,
                 configurationId: configuration.id,
             },
@@ -56,13 +66,20 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
 
     const paymentPayload = {
         email: user.email,
-        amount: Math.round((totalprice + calculateVAT(totalprice)) * 100),
+        amount: priceAfterVAT,
         reference: generateRefenceNumber(),
         callback_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
         metadata: {
             userId: user?.id,
             orderId: order.id,
         },
+        custom_fields: [
+            {
+                display_name: "Application's Name",
+                variable_name: "application_name",
+                value: "Custom iPhone Case",
+            }
+        ]
     }
 
     const response = await axios.post(INITIALIZETRANSACTIONURL, paymentPayload, {
