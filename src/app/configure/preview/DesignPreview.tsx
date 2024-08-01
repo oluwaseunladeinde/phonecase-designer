@@ -16,7 +16,7 @@ import { createCheckoutSession } from "./actions";
 import { calculateVAT } from "@/lib/paystack";
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 import LoginModal from "@/components/LoginModal";
-
+import { generateRandomShippingAndBillingAddresses } from "@/lib/helpers";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const router = useRouter()
