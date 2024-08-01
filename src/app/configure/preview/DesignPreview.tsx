@@ -22,6 +22,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
+    console.log(`Design Preview run...`)
     const { user } = useKindeBrowserClient()
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
 
@@ -62,9 +63,11 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const handleCheckout = () => {
         if (user) {
             // create payment session
+            console.log("user ", user)
             createPaymentSession({ configId: id })
         } else {
             // need to log in
+            console.log("user ", user)
             localStorage.setItem('configurationId', id)
             setIsLoginModalOpen(true)
         }
