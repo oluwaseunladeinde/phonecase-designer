@@ -48,10 +48,6 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
 
     const priceAfterVAT = Math.round((totalprice + calculateVAT(totalprice)))
 
-    console.log('priceBeforeVAT ', totalprice);
-    console.log('VAT ', calculateVAT(totalprice));
-    console.log('priceAfterVAT ', priceAfterVAT);
-
     if (existingOrder) {
         order = existingOrder
     } else {

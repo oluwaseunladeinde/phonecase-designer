@@ -1,7 +1,7 @@
 "use client"
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn, formatNaira } from '@/lib/utils';
+import { cn, convertToNairaWithCurrency } from '@/lib/utils';
 import NextImage from 'next/image';
 import { Rnd } from 'react-rnd';
 import { Field, Label as HeadlessLabel, Radio, RadioGroup } from '@headlessui/react'
@@ -361,7 +361,7 @@ const DesignConfigurator = ({
                                                                 as='span'
                                                                 className='mt-2 flex text-sm sm:ml-4 sm:mt-0 sm:flex-col sm:text-right'>
                                                                 <span className='font-medium text-gray-900'>
-                                                                    {formatNaira(option.price / 100)}
+                                                                    {convertToNairaWithCurrency(option.price / 100)}
                                                                 </span>
                                                             </RadioGroup.Description>
                                                         </Radio>
@@ -380,7 +380,7 @@ const DesignConfigurator = ({
                     <div className='w-full h-full flex justify-end items-center'>
                         <div className='w-full flex gap-6 items-center'>
                             <p className='font-medium whitespace-nowrap'>
-                                {formatNaira(
+                                {convertToNairaWithCurrency(
                                     (BASE_PRICE + options.finish.price + options.material.price) /
                                     100
                                 )}
