@@ -60,6 +60,7 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         })
     }
 
+    // create paystack data 
     const paymentPayload = {
         email: user.email,
         amount: priceAfterVAT,
