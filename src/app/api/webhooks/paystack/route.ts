@@ -78,5 +78,10 @@ export async function POST(req: Request) {
         )
     }
 
-    return new NextResponse(null, { status: 200 });
+    //return new NextResponse(null, { status: 200 });
+
+    return NextResponse.json(
+        { result: event, ok: true },
+        { status: 200 }
+    )
 }
