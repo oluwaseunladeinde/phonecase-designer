@@ -68,7 +68,9 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         callback_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
         metadata: {
             userId: user?.id,
+            userEmail: user?.email,
             orderId: order.id,
+
         },
         custom_fields: [
             {

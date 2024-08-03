@@ -30,6 +30,13 @@ export function generateRandomShippingAndBillingAddresses(): { shippingAddress: 
     };
 }
 
+export function generateInvoiceNumber(prefix: string = 'INV-'): string {
+    const timestamp = new Date().getTime();
+    const randomPart = Math.floor(Math.random() * 1000); // Add randomness
+    const invoiceNumber = `${prefix}${timestamp}${randomPart}`;
+    return invoiceNumber;
+}
+
 
 export const getOrCreateUser = async (userId: string, userEmail: string | null) => {
     let user = null

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
-import { formatPrice } from '@/lib/utils'
+import { convertToNairaWithCurrency, formatNaira, formatPrice } from '@/lib/utils'
 import { getPaymentStatus } from './actions'
 import PhonePreview from '@/components/PhonePreview'
 
@@ -130,15 +130,15 @@ const ThankYou = () => {
                 <div className='space-y-6 border-t border-zinc-200 pt-10 text-sm'>
                     <div className='flex justify-between'>
                         <p className='font-medium text-zinc-900'>Subtotal</p>
-                        <p className='text-zinc-700'>{formatPrice(amount)}</p>
+                        <p className='text-zinc-700'>{formatNaira(amount / 100)}</p>
                     </div>
                     <div className='flex justify-between'>
-                        <p className='font-medium text-zinc-900'>Shipping</p>
-                        <p className='text-zinc-700'>{formatPrice(0)}</p>
+                        <p className='font-medium text-zinc-900'>Shipping <span className='text-muted-foreground text-sm italic'>(free)</span></p>
+                        <p className='text-zinc-700'>{formatNaira(0)}</p>
                     </div>
                     <div className='flex justify-between'>
                         <p className='font-medium text-zinc-900'>Total</p>
-                        <p className='text-zinc-700'>{formatPrice(amount)}</p>
+                        <p className='text-zinc-700'>{formatNaira(amount / 100)}</p>
                     </div>
                 </div>
             </div>

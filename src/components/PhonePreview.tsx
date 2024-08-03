@@ -4,6 +4,7 @@ import { CaseColor } from '@prisma/client'
 import { useEffect, useRef, useState } from 'react'
 import { AspectRatio } from './ui/aspect-ratio'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 const PhonePreview = ({
     croppedImageUrl,
@@ -31,7 +32,7 @@ const PhonePreview = ({
         window.addEventListener('resize', handleResize)
 
         return () => window.removeEventListener('resize', handleResize)
-    }, [ref.current])
+    }, [])
 
     let caseBackgroundColor = 'bg-zinc-950'
     if (color === 'blue') caseBackgroundColor = 'bg-blue-950'
@@ -47,13 +48,23 @@ const PhonePreview = ({
                         renderedDimensions.width / (1216 / 121),
                     top: renderedDimensions.height / 6.22,
                 }}>
-                <img
+                {/* <img
                     width={renderedDimensions.width / (3000 / 637)}
                     className={cn(
                         'phone-skew relative z-20 rounded-t-[15px] rounded-b-[10px] md:rounded-t-[30px] md:rounded-b-[20px]',
                         caseBackgroundColor
                     )}
                     src={croppedImageUrl}
+                /> */}
+                <Image
+                    width={renderedDimensions.width / (3000 / 637)}
+                    className={cn(
+                        'phone-skew relative z-20 rounded-t-[15px] rounded-b-[10px] md:rounded-t-[30px] md:rounded-b-[20px]',
+                        caseBackgroundColor
+                    )}
+                    src={croppedImageUrl}
+                    alt="Phone Case Preview"
+                    height={490}
                 />
             </div>
 

@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { generateRandomShippingAndBillingAddresses } from "@/lib/helpers";
+import { Resend } from 'resend'
+import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
     const event = req.body;
@@ -23,10 +27,10 @@ export async function POST(req: Request) {
         // Handle successful charge
         if (res?.event === 'charge.success' && res?.data.status === 'success') {
 
-            const { userId, orderId } = res?.metadata || { userId: null, orderId: null }
+            const { userId, userEmail, orderId } = res?.metadata || { userId: null, orderId: null }
 
             // check that the metadata contains the necessary field to process this hook. 
-            if (!userId || !orderId) {
+            if (!userId || !userEmail || !orderId) {
                 return new NextResponse(`Webhook Error: Missing metadata: ${res?.metadata}`, { status: 400 });
             }
 
@@ -60,6 +64,25 @@ export async function POST(req: Request) {
                         },
                     },
                 }
+            })
+
+            await resend.emails.send({
+                from: 'Phonecase Designer <oluwaseun.ladeinde@yahoo.com>',
+                to: [userEmail],
+                subject: 'Thanks for your order!',
+                react: OrderReceivedEmail({
+                    orderId,
+                    orderDate: updatedOrder.createdAt.toLocaleDateString(),
+                    // @ts-ignore
+                    shippingAddress: {
+                        name: shippingAddress!.name!,
+                        city: shippingAddress!.city!,
+                        country: shippingAddress!.country!,
+                        postalCode: shippingAddress!.postalCode!,
+                        street: shippingAddress!.street!,
+                        state: shippingAddress!.state,
+                    },
+                }),
             })
 
         } else if (res?.event === 'charge.failed') { // Handle failed charge
