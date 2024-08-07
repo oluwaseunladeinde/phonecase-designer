@@ -14,15 +14,16 @@ import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createCheckoutSession } from "./actions";
 import { calculateVAT } from "@/lib/paystack";
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { useUser } from "@clerk/clerk-react";
 import LoginModal from "@/components/LoginModal";
-import { generateRandomShippingAndBillingAddresses } from "@/lib/helpers";
+import { generateRandomShippingAndBillingAddresses, getOrCreateUser } from "@/lib/helpers";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
-    const { user } = useKindeBrowserClient()
+    const { isSignedIn, user, isLoaded } = useUser();
+
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
@@ -48,7 +49,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
         mutationFn: createCheckoutSession,
         onSuccess: ({ url }) => {
             if (url) router.push(url)
-            else throw new Error('Unable to retrieve payment URL.')
+            else throw new Error('Unable to retrieve payment URL. Try again')
         },
         onError: () => {
             toast({
@@ -60,9 +61,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     })
 
     const handleCheckout = () => {
-        if (user) {
+        if (isSignedIn && user) {
             // create payment session
-            console.log("exist user ", user)
             createPaymentSession({ configId: id })
         } else {
             // need to log in

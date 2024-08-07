@@ -1,4 +1,5 @@
 import { db } from "@/db"
+import { User } from "@clerk/nextjs/server";
 import { faker } from '@faker-js/faker';
 
 interface Address {
@@ -38,19 +39,23 @@ export function generateInvoiceNumber(prefix: string = 'INV-'): string {
 }
 
 
-export const getOrCreateUser = async (userId: string, userEmail: string | null) => {
+export const getOrCreateUser = async (clerkUser: User | null) => {
     let user = null
     const existingUser = await db.user.findFirst({
-        where: { id: userId },
+        where: { id: clerkUser?.id },
     })
 
     if (!existingUser) {
         user = await db.user.create({
             data: {
-                id: userId,
-                email: userEmail!,
+                id: clerkUser?.id,
+                email: clerkUser?.emailAddresses[0]?.emailAddress!,
+                firstName: clerkUser?.firstName,
+                lastName: clerkUser?.lastName,
             },
         })
+    } else {
+        user = existingUser
     }
-    return user
+    return { email: user?.email, id: user?.id, user: user }
 }  

@@ -4,7 +4,7 @@ import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products';
 import { db } from '@/db';
 import axios from "axios";
 import { calculateVAT, generateRefenceNumber, INITIALIZETRANSACTIONURL } from '@/lib/paystack';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { Order } from '@prisma/client';
 import { getOrCreateUser } from '@/lib/helpers';
 import { convertToNaira } from '@/lib/utils';
@@ -18,14 +18,13 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         throw new Error('No such configuration found')
     }
 
-    const { getUser } = getKindeServerSession()
-    const user = await getUser()
+    const user = await currentUser();
 
     if (!user) {
         throw new Error('You need to be logged in')
     }
 
-    const profileUser = await getOrCreateUser(user.id, user.email)
+    const { user: appuser } = await getOrCreateUser(user)
 
     const { finish, material } = configuration
 
@@ -41,7 +40,7 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
 
     const existingOrder = await db.order.findFirst({
         where: {
-            userId: profileUser?.id,
+            userId: appuser?.id,
             configurationId: configuration.id,
         },
     })
@@ -62,15 +61,14 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
 
     // create paystack data 
     const paymentPayload = {
-        email: user.email,
+        email: appuser?.email,
         amount: priceAfterVAT,
         reference: generateRefenceNumber(),
         callback_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
         metadata: {
-            userId: user?.id,
-            userEmail: user?.email,
+            userId: appuser?.id,
+            userEmail: appuser?.email,
             orderId: order.id,
-
         },
         custom_fields: [
             {
@@ -81,9 +79,17 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         ]
     }
 
-    const response = await axios.post(INITIALIZETRANSACTIONURL, paymentPayload, {
-        headers: { Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET_API_KEY}` }
-    });
-    const response_data = response.data.data;
-    return { url: response_data?.authorization_url }
+    console.log({ paymentPayload });
+
+    try {
+        const response = await axios.post(INITIALIZETRANSACTIONURL, paymentPayload, {
+            headers: { Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET_API_KEY}` }
+        });
+        const response_data = response.data.data;
+        return { url: response_data?.authorization_url }
+    } catch (err) {
+        console.error("DESIGN PREVIEW ERROR: ", err);
+    }
+    return { url: null };
+
 }

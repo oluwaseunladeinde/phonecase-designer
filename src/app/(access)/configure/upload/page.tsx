@@ -6,10 +6,10 @@ import { useUploadThing } from '@/lib/uploadthing'
 import { cn } from '@/lib/utils'
 import { Image, Loader2, MousePointerSquareDashed } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React, { useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import Dropzone, { FileRejection } from 'react-dropzone'
 
-const UploadPage = () => {
+const Page = () => {
     const { toast } = useToast()
     const [isDragOver, setIsDragOver] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<number>(0)
@@ -69,17 +69,15 @@ const UploadPage = () => {
                     {({ getRootProps, getInputProps }) => (
                         <div
                             className='h-full w-full flex-1 flex flex-col items-center justify-center'
-                            {...getRootProps()}
-                        >
+                            {...getRootProps()}>
                             <input {...getInputProps()} />
                             {isDragOver ? (
                                 <MousePointerSquareDashed className='h-6 w-6 text-zinc-500 mb-2' />
                             ) : isUploading || isPending ? (
                                 <Loader2 className='animate-spin h-6 w-6 text-zinc-500 mb-2' />
                             ) : (
-                                <Image className='h-6 w-6 text-zinc-500 mb-2 cursor-pointer hover:text-zinc-700' />
+                                <Image className='h-6 w-6 text-zinc-500 mb-2' />
                             )}
-
                             <div className='flex flex-col justify-center mb-2 text-sm text-zinc-700'>
                                 {isUploading ? (
                                     <div className='flex flex-col items-center'>
@@ -104,10 +102,10 @@ const UploadPage = () => {
                                     </p>
                                 )}
                             </div>
+
                             {isPending ? null : (
                                 <p className='text-xs text-zinc-500'>PNG, JPG, JPEG</p>
                             )}
-
                         </div>
                     )}
                 </Dropzone>
@@ -116,4 +114,4 @@ const UploadPage = () => {
     )
 }
 
-export default UploadPage
+export default Page

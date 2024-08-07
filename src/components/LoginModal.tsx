@@ -7,8 +7,9 @@ import {
     DialogTitle,
 } from './ui/dialog'
 import Image from 'next/image'
-import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs'
-import { buttonVariants } from './ui/button'
+import { Button, buttonVariants } from './ui/button'
+import Link from 'next/link'
+import { SignInButton, SignUpButton } from '@clerk/clerk-react'
 
 const LoginModal = ({
     isOpen,
@@ -30,7 +31,7 @@ const LoginModal = ({
                         />
                     </div>
                     <DialogTitle className='text-3xl text-center font-bold tracking-tight text-gray-900'>
-                        Log in to continue
+                        Log in or Register to continue
                     </DialogTitle>
                     <DialogDescription className='text-base text-center py-2'>
                         <span className='font-medium text-zinc-900'>
@@ -41,12 +42,16 @@ const LoginModal = ({
                 </DialogHeader>
 
                 <div className='grid grid-cols-2 gap-6 divide-x divide-gray-200'>
-                    <LoginLink className={buttonVariants({ variant: 'outline' })}>
-                        Login
-                    </LoginLink>
-                    <RegisterLink className={buttonVariants({ variant: 'default' })}>
-                        Sign up
-                    </RegisterLink>
+                    <SignInButton>
+                        <Button variant={"outline"}>
+                            LOG IN
+                        </Button>
+                    </SignInButton>
+                    <SignUpButton>
+                        <Button variant={"default"}>
+                            REGISTER
+                        </Button>
+                    </SignUpButton>
                 </div>
             </DialogContent>
         </Dialog>
