@@ -14,20 +14,26 @@ const ValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
 export async function POST(req: Request) {
 
     const event = req.body
-    const paystack = await req.text()
+    const paystackText = await req.text()
+    const paystackJson = await req.json()
+
+    let sig = null;
 
     const ipAddress = headers().get('x-forwarded-for') as string;
+    const signature = headers().get("x-paystack-signature") as string
     const isValidPaystackIPAddress = ValidIPAddresses.includes(ipAddress);
 
-    console.log({ paystack, ipAddress, isValidPaystackIPAddress, event })
+    if (paystackJson) {
+        sig = paystackJson?.data?.authorization?.signature;
+    }
 
-    const headersignature = headers().get("x-paystack-signature") as string;
+    console.log({ sig, signature, paystackJson, paystackText, event })
 
-    if (!headersignature) {
+    if (!signature) {
         return new NextResponse(`No signature provided`, { status: 400 })
     }
 
-    if (!verifySignature(event, headersignature)) {
+    if (!verifySignature(event, signature)) {
         return new NextResponse(`Invalid Signature`, { status: 400 })
     }
 
