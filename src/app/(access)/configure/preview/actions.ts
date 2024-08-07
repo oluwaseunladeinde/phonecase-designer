@@ -79,8 +79,6 @@ export const createCheckoutSession = async ({ configId }: { configId: string }) 
         ]
     }
 
-    console.log({ paymentPayload });
-
     try {
         const response = await axios.post(INITIALIZETRANSACTIONURL, paymentPayload, {
             headers: { Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET_API_KEY}` }

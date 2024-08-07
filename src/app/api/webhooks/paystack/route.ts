@@ -14,12 +14,12 @@ const ValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
 export async function POST(req: Request) {
 
     const event = req.body
-    const paystack = req.text()
+    const paystack = await req.text()
 
     const ipAddress = headers().get('x-forwarded-for') as string;
     const isValidPaystackIPAddress = ValidIPAddresses.includes(ipAddress);
 
-    console.log({ paystack, ipAddress, isValidPaystackIPAddress })
+    console.log({ paystack, ipAddress, isValidPaystackIPAddress, event })
 
     const headersignature = headers().get("x-paystack-signature") as string;
 
