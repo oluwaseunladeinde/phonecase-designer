@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import MaxWidthWrapper from './MaxWidthWrapper'
-import { buttonVariants } from './ui/button'
+import { Button, buttonVariants } from './ui/button'
 import { ArrowRight } from 'lucide-react'
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { UserButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import CreateCase from './CreateCase';
 
 const Navbar = async () => {
@@ -37,25 +37,17 @@ const Navbar = async () => {
                             </>
                         ) : (
                             <>
-                                <Link
-                                    //href='/api/auth/register'
-                                    href='/sign-up'
-                                    className={buttonVariants({
-                                        size: 'sm',
-                                        variant: 'ghost',
-                                    })}>
-                                    Sign up
-                                </Link>
+                                <SignUpButton>
+                                    <Button className='hidden sm:flex items-center gap-1' variant={"ghost"}>
+                                        Register
+                                    </Button>
+                                </SignUpButton>
 
-                                <Link
-                                    //href='/api/auth/login'
-                                    href='/sign-in'
-                                    className={buttonVariants({
-                                        size: 'sm',
-                                        variant: 'ghost',
-                                    })}>
-                                    Login
-                                </Link>
+                                <SignInButton>
+                                    <Button className='hidden sm:flex items-center gap-1' variant={"ghost"}>
+                                        Login
+                                    </Button>
+                                </SignInButton>
 
                                 <div className='h-8 w-px bg-zinc-200 hidden sm:block' />
 

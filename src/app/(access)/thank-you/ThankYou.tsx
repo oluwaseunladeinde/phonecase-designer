@@ -6,10 +6,16 @@ import { Loader2 } from 'lucide-react'
 import { convertToNairaWithCurrency, formatNaira, formatPrice } from '@/lib/utils'
 import { getPaymentStatus } from './actions'
 import PhonePreview from '@/components/PhonePreview'
+import { useUser } from '@clerk/clerk-react'
+import { useState } from 'react'
+import LoginModal from '@/components/LoginModal'
 
 const ThankYou = () => {
     const searchParams = useSearchParams()
     const orderId = searchParams.get('orderId') || ''
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
+
+    const { isLoaded, isSignedIn, user } = useUser()
 
     const { data } = useQuery({
         queryKey: ['get-payment-status'],
@@ -18,11 +24,19 @@ const ThankYou = () => {
         retryDelay: 500,
     })
 
-    if (data === undefined) {
+    if (!isSignedIn) {
+
         return (
-            <div className='w-full mt-24 flex justify-center'>
+            <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
+        )
+    }
+
+    if (data === undefined) {
+
+        return (
+            <div className='w-full flex-1 mt-24 flex justify-center'>
                 <div className='flex flex-col items-center gap-2'>
-                    <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
+                    <Loader2 className='h-8 w-8 animate-spin text-sky-600' />
                     <h3 className='font-semibold text-xl'>Loading your order...</h3>
                     <p>This won&apos;t take long.</p>
                 </div>
@@ -31,14 +45,18 @@ const ThankYou = () => {
     }
 
     if (data === false) {
+
         return (
-            <div className='w-full mt-24 flex justify-center'>
-                <div className='flex flex-col items-center gap-2'>
-                    <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
-                    <h3 className='font-semibold text-xl'>Verifying your payment...</h3>
-                    <p>This might take a moment.</p>
+            <>
+                <div className='w-full flex-1 mt-24 flex justify-center'>
+                    <div className='flex flex-col items-center gap-2'>
+                        <Loader2 className='h-8 w-8 animate-spin text-sky-600' />
+                        <h3 className='font-semibold text-xl'>Verifying your payment...</h3>
+                        <p>This might take a moment. Please wait.</p>
+                    </div>
                 </div>
-            </div>
+                <div className='mt-10 gap-4' />
+            </>
         )
     }
 
@@ -46,7 +64,7 @@ const ThankYou = () => {
     const { color } = configuration
 
     return (
-        <div className='bg-white'>
+        <div className='bg-white flex-1'>
             <div className='mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8'>
                 <div className='max-w-xl'>
                     <p className='text-base font-medium text-primary'>Thank you!</p>
