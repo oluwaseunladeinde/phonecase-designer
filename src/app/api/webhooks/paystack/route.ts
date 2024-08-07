@@ -4,16 +4,22 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { generateRandomShippingAndBillingAddresses } from "@/lib/helpers";
-import { Resend } from 'resend'
+import { Resend } from 'resend';
+import crypto, { randomUUID } from 'crypto';
 import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const ValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
 
 export async function POST(req: Request) {
-    //const event = req.body;
-    const event = req.text;
 
-    console.log({ event })
+    const event = req.body
+    const paystack = req.text()
+
+    const ipAddress = headers().get('x-forwarded-for') as string;
+    const isValidPaystackIPAddress = ValidIPAddresses.includes(ipAddress);
+
+    console.log({ paystack, ipAddress, isValidPaystackIPAddress })
 
     const headersignature = headers().get("x-paystack-signature") as string;
 
@@ -25,17 +31,17 @@ export async function POST(req: Request) {
         return new NextResponse(`Invalid Signature`, { status: 400 })
     }
 
-    const res = event as any;
+    const response = event as any;
 
     try {
         // Handle successful charge
-        if (res?.event === 'charge.success' && res?.data.status === 'success') {
+        if (response?.event === 'charge.success' && response?.data.status === 'success') {
 
-            const { userId, userEmail, orderId } = res?.metadata || { userId: null, orderId: null }
+            const { userId, userEmail, orderId } = response?.metadata || { userId: null, orderId: null }
 
             // check that the metadata contains the necessary field to process this hook. 
             if (!userId || !userEmail || !orderId) {
-                return new NextResponse(`Webhook Error: Invalid request metadata: ${res?.metadata}`, { status: 400 });
+                return new NextResponse(`Webhook Error: Invalid request metadata: ${response?.metadata}`, { status: 400 });
             }
 
             // TODO: Create a shipping address collector component
@@ -89,9 +95,9 @@ export async function POST(req: Request) {
                 }),
             })
 
-        } else if (res?.event === 'charge.failed') { // Handle failed charge
+        } else if (response?.event === 'charge.failed') { // Handle failed charge
 
-        } else if (res?.event === 'refund.created') { // Handle refund
+        } else if (response?.event === 'refund.created') { // Handle refund
 
         } else { // Handle other events
 
