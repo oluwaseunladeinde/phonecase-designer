@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
             // check that the metadata contains the necessary field to process this hook. 
             if (!userId || !userEmail || !orderId) {
-                return new NextResponse(`Webhook Error: Missing metadata: ${res?.metadata}`, { status: 400 });
+                return new NextResponse(`Webhook Error: Invalid request metadata: ${res?.metadata}`, { status: 400 });
             }
 
             // TODO: Create a shipping address collector component
