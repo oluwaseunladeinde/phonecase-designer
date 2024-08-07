@@ -13,13 +13,16 @@ import LoginModal from '@/components/LoginModal'
 const ThankYou = () => {
     const searchParams = useSearchParams()
     const orderId = searchParams.get('orderId') || ''
+    const reference = searchParams.get('reference') || ''
+    const trxref = searchParams.get('trxref') || ''
+
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
 
     const { isLoaded, isSignedIn, user } = useUser()
 
     const { data } = useQuery({
         queryKey: ['get-payment-status'],
-        queryFn: async () => await getPaymentStatus({ orderId }),
+        queryFn: async () => await getPaymentStatus({ orderId, reference, trxref }),
         retry: true,
         retryDelay: 500,
     })

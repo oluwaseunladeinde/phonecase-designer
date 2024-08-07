@@ -15,6 +15,8 @@ export const generateRefenceNumber = (reftype?: string) => {
     }
 }
 
+export const thankyouurl = "http://localhost:3000/thank-you?orderId=clzjue2bp0001hcrkkvs9lsqp&reference=230925cc-6a65-41d4-9459-b58015600034&trxref=230925cc-6a65-41d4-9459-b58015600034"
+
 export const verifySignature = (eventData: any, signature: string | string[]): boolean => {
     try {
         const hmac = crypto.createHmac('sha512', process.env.PAYSTACK_TEST_SECREY_API_KEY!);
@@ -25,7 +27,6 @@ export const verifySignature = (eventData: any, signature: string | string[]): b
         console.log("VERIFYING PAYSTACK SIGNATURE FAIL", e)
     }
     return false;
-
 }
 
 export const initializePayment = async (amount: number, email: string) => {

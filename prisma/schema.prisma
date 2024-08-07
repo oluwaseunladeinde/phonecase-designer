@@ -39,6 +39,12 @@ enum CaseColor {
   green
 }
 
+enum PaymentStatus {
+  paid
+  not_paid
+  cancelled
+}
+
 
 model Configuration {
   id              String        @id @default(cuid())
@@ -115,4 +121,16 @@ model BillingAddress {
 
   createdAt DateTime @default(now())
   updated   DateTime @updatedAt
+}
+
+model PaystackPaymentReference {
+
+  id          String  @id @default(cuid())
+  orderId     String
+  reference   String
+  trxref      String
+  status      PaymentStatus?
+
+  createdAt   DateTime @default(now())
+  updated     DateTime @updatedAt
 }
