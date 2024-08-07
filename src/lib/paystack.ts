@@ -1,7 +1,5 @@
 import axios from "axios";
-import { randomUUID } from "crypto";
-
-import { usePaystackPayment, PaystackButton } from 'react-paystack';
+import crypto, { randomUUID } from 'crypto';
 
 export const ValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
 export const INITIALIZETRANSACTIONURL = `https://api.paystack.co/transaction/initialize`;
@@ -18,10 +16,16 @@ export const generateRefenceNumber = (reftype?: string) => {
 }
 
 export const verifySignature = (eventData: any, signature: string | string[]): boolean => {
-    const crypto = require('crypto');
-    const hmac = crypto.createHmac('sha512', process.env.PAYSTACK_TEST_SECREY_API_KEY);
-    const expectedSignature = hmac.update(JSON.stringify(eventData)).digest('hex');
-    return expectedSignature === signature;
+    try {
+        const hmac = crypto.createHmac('sha512', process.env.PAYSTACK_TEST_SECREY_API_KEY!);
+        const expectedSignature = hmac.update(JSON.stringify(eventData)).digest('hex');
+        return expectedSignature === signature;
+
+    } catch (e) {
+        console.log("VERIFYING PAYSTACK SIGNATURE FAIL", e)
+    }
+    return false;
+
 }
 
 export const initializePayment = async (amount: number, email: string) => {

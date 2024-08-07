@@ -11,6 +11,9 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
     const event = req.body;
+
+    console.log({ event })
+
     const headersignature = headers().get("x-paystack-signature") as string;
 
     if (!headersignature) {
