@@ -9,44 +9,37 @@ import crypto, { randomUUID } from 'crypto';
 import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const ValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
+const PaystackValidIPAddresses = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
 
 export async function POST(req: Request) {
 
-    const event = req.body
-    const paystackText = await req.text()
-    const paystackJson = await req.json()
-
-    let sig = null;
-
-    const ipAddress = headers().get('x-forwarded-for') as string;
-    const signature = headers().get("x-paystack-signature") as string
-    const isValidPaystackIPAddress = ValidIPAddresses.includes(ipAddress);
-
-    if (paystackJson) {
-        sig = paystackJson?.data?.authorization?.signature;
+    const isValidIPAddress = PaystackValidIPAddresses.includes(headers().get('x-forwarded-for') as string);
+    if (!isValidIPAddress) {
+        return new NextResponse(`Fraudulent Request Detected`, { status: 400 })
     }
 
-    console.log({ sig, signature, paystackJson, paystackText, event })
-
+    const signature = headers().get("x-paystack-signature") as string;
     if (!signature) {
         return new NextResponse(`No signature provided`, { status: 400 })
     }
 
-    if (!verifySignature(event, signature)) {
+    const response = await req.json()
+
+    if (!verifySignature(response, signature)) {
         return new NextResponse(`Invalid Signature`, { status: 400 })
     }
-
-    const response = event as any;
 
     try {
         // Handle successful charge
         if (response?.event === 'charge.success' && response?.data.status === 'success') {
 
-            const { userId, userEmail, orderId } = response?.metadata || { userId: null, orderId: null }
+            const { userId, userEmail, orderId } = response?.data?.metadata || { userId: null, orderId: null }
+
+            console.log({ metadata: response?.data?.metadata, userId, userEmail, orderId });
 
             // check that the metadata contains the necessary field to process this hook. 
             if (!userId || !userEmail || !orderId) {
+                console.log("Could not find metadata payload")
                 return new NextResponse(`Webhook Error: Invalid request metadata: ${response?.metadata}`, { status: 400 });
             }
 
@@ -117,10 +110,8 @@ export async function POST(req: Request) {
         )
     }
 
-    //return new NextResponse(null, { status: 200 });
-
     return NextResponse.json(
-        { result: event, ok: true },
+        { result: response, ok: true },
         { status: 200 }
     )
 }
