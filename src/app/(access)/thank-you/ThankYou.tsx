@@ -28,7 +28,6 @@ const ThankYou = () => {
     })
 
     if (!isSignedIn) {
-
         return (
             <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
         )

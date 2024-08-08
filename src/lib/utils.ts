@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import axios from 'axios';
-import { Metadata } from 'next'
+import { Metadata } from 'next';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -25,13 +25,13 @@ export const formatNaira = (value: number): string => {
 }
 
 export const convertToNaira = (dollars: number): number => {
-  const exchangeRate = 1_601
+  const exchangeRate = 1_575
   const nairaEquivalent = (dollars * exchangeRate);
   return nairaEquivalent;
 }
 
 export const convertToNairaWithCurrency = (dollars: number): string => {
-  const exchangeRate = 1_601
+  const exchangeRate = 1_575
   const nairaEquivalent = formatNaira(dollars * exchangeRate);
   return nairaEquivalent;
 }

@@ -17,17 +17,17 @@ import {
 } from '@/components/ui/table'
 import { db } from '@/db'
 import { formatNaira, formatPrice } from '@/lib/utils'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { notFound } from 'next/navigation'
 import StatusDropdown from './StatusDropdown'
+import { currentUser } from '@clerk/nextjs/server'
 
 const Page = async () => {
-    const { getUser } = getKindeServerSession()
-    const user = await getUser()
+
+    const user = await currentUser()
 
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL
 
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user || user?.emailAddresses[0].emailAddress !== ADMIN_EMAIL) {
         return notFound()
     }
 

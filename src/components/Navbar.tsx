@@ -8,7 +8,7 @@ import CreateCase from './CreateCase';
 
 const Navbar = async () => {
     const user = await currentUser()
-    const isAdmin = user?.emailAddresses[0] === process.env.ADMIN_EMAIL
+    const isAdmin = user?.emailAddresses[0].emailAddress === process.env.ADMIN_EMAIL
 
     return (
         <nav className='sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all'>
@@ -30,9 +30,7 @@ const Navbar = async () => {
                                         })}>
                                         Dashboard ✨
                                     </Link>
-                                ) : null}
-
-                                <CreateCase />
+                                ) : <CreateCase />}
                                 <UserButton />
                             </>
                         ) : (
